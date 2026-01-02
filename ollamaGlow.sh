@@ -29,8 +29,13 @@ while true; do
   >"$TEMP"
   echo "$user_input" | ollama run "$MODEL" | tee "$TEMP"
 
-  clear
-
-  # strip down ansii before sending it to glow
-  sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g" "$TEMP" | glow
+  if [ "$(wc -l <"$TEMP")" -lt "$(tput lines)" ]; then
+    clear
+    glow <"$TEMP"
+  else
+    glow -p <"$TEMP"
+    # glow -p exits in default buffer
+    tput smcup
+    clear
+  fi
 done
