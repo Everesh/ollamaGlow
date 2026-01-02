@@ -29,12 +29,16 @@ while true; do
   >"$TEMP"
   echo "$user_input" | ollama run "$MODEL" | tee "$TEMP"
 
-  if [ "$(wc -l <"$TEMP")" -lt "$(tput lines)" ]; then
-    clear
+  clear
+
+  # the 5 is to account for padding
+  if [ "$(($(wc -l <"$TEMP") + 5))" -lt "$(tput lines)" ]; then
     glow <"$TEMP"
   else
     glow -p <"$TEMP"
-    # glow -p exits in default buffer
+
+    # glow -p exits on the wrong buffer
+    # im not fixing it, just correcting for it
     tput smcup
     clear
   fi
